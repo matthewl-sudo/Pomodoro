@@ -12,6 +12,10 @@
   margin-bottom: 40px;
 }
 
+.list-group-item {
+  text-transform: capitalize;
+}
+
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors

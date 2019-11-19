@@ -8,16 +8,45 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
 
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
+Vue.component('log', {
+    template:`
+    <ul class="list-group">
+        <li class="list-group-item" v-for="(log, index) in logs"
+        :log="log"
+        :key="index">
+        Time: {{log.duration}} mins, Type: {{log.type}}<br>
+        <small>{{log.created_at}}</small>
+        </li>
+    </ul>
+    `,
+    data: function(){
+        return{
+            logs: [],
+        }
+    },
+    methods: {
+        showLog(){
+            var self = this;
+            axios({
+                method: 'get',
+                url: '/'
+            })
+            .then(response =>{
+                self.logs = response.data;
+                console.log(response.data)
+            })
+            .catch(error =>{
+                console.log(error)
+            });
+        },
+    },
+    created() {
+        this.showLog();
+    },
+});
 
 Vue.component('timer', {
     template:`
@@ -71,11 +100,11 @@ Vue.component('timer', {
                     <div class="input-group-prepend">
                     <label class="input-group-text" for="inputGroupSelect01">Type</label>
                     </div>
-                    <select class="custom-select" id="inputGroupSelect01">
-                        <option selected>Unset</option>
-                        <option value="1">Coding</option>
-                        <option value="2">Recreational Reading</option>
-                        <option value="3">Study</option>
+                    <select class="custom-select" id="inputGroupSelect01" v-model="type">
+                        <option value="unset" selected>Unset</option>
+                        <option value="coding">Coding</option>
+                        <option value="reading">Recreational Reading</option>
+                        <option value="study">Study</option>
                     </select>
                 </div>
             </div>
@@ -88,16 +117,18 @@ Vue.component('timer', {
     totalTime: (.25 * 60),
     resetButton: true,
     title: "Let the countdown begin!!",
-    storeTime: [],
+    storeTime: null,
+    type: "unset",
         }
     },
 
     methods: {
     startTimer() {
         this.timer = setInterval(() => this.countdown(), 1000);
-        this.storeTime[0] = Math.floor(this.totalTime/60);
+        this.storeTime = Math.floor(this.totalTime/60);
         this.resetButton = true;
         this.title = "Greatness is within sight!!"
+        console.log(this.storeTime);
     },
     stopTimer() {
         clearInterval(this.timer);
@@ -120,24 +151,23 @@ Vue.component('timer', {
         this.resetButton = true;
         this.title = "More time!!"
     },
-    padTime(time) { // when less than 10 include a zero ie: 09, 08 ...
+    padTime(time) { // when less than 10 include a zero ie: 09, 08, 07...
         return (time < 10 ? '0' : '') + time;
     },
-    saveTime(storeTime){
-        // axios({
-        //         method: 'post',
-        //         url: '/add',
-        //         data: this.storeTime,
-        //     });
-        alert(this.storeTime[0]);
+    saveTime(){
+        axios({
+                method: 'post',
+                url: '/add',
+                data: {storeTime: this.storeTime, type: this.type},
+            });
     },
     countdown() {
         if(this.totalTime >= 1){
             this.totalTime--;
         }else{
             this.totalTime = 0;
+            this.saveTime()
             this.resetTimer()
-            this.saveTime(this.storeTime[0])
             }
         }
     },
