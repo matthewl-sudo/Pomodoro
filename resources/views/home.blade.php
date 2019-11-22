@@ -13,25 +13,28 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
-                    You are logged in!
+                    <quote></quote>
                 </div>
             </div>
             <timer></timer>
         </div>
         <div class="col-md-4">
             <div class="card">
-                <div class="card-header">Your Activity Log</div>
+                <div class="card-header">{{ ucfirst(Auth::user()->name) }}</div>
+                <log></log>
+                <!-- {{ ucfirst(Auth::user()->name) }}
+                <my-progress-bar></my-progress-bar> -->
+                <!-- <div class="card-header">Activity Log: Your Last 5 Timers</div> -->
 
-                <div class="card-body">
-                    <log></log>
-                </div>
+                <!-- <div class="card-body">
+
+                </div> -->
             </div>
             <div class="card">
-                <div class="card-header">LeaderBoards</div>
+                <div class="card-header">Top Ten LeaderBoards</div>
 
                 <div class="card-body">
-
+                    <leader-boards></leader-boards>
                 </div>
 
             </div>

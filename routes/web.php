@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/welcome', function () {
     return view('welcome');
 });
 
@@ -21,4 +21,12 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::post('/add', 'HomeController@saveTime');
 
-Route::get('/', 'HomeController@showLog');
+Route::post('/', 'HomeController@showLog');
+
+Route::get('/', function (){
+    return redirect('/home');
+});
+
+Route::get('/showExp', 'HomeController@showExp');
+
+Route::get('/showLeaderBoards', 'HomeController@showLeaderBoards');

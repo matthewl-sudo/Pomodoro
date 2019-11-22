@@ -49166,8 +49166,95 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js"); // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
+Vue.component('leader-boards', {
+  template: "<div class=\"card-body\">\n            <ul class=\"list-group\">\n                <li class=\"list-group-item\"\n                v-for=\"(leaderBoard, index) in leaderBoards\"\n                :leaderBoard='leaderBoard'\n                :key='index'>\n                    <p>Place: {{index+1}} {{leaderBoard.name}}</p> <small>{{leaderBoard.duration}} Mins of being focused</small>\n                </li>\n            </ul>\n        </div>",
+  data: function data() {
+    return {
+      leaderBoards: []
+    };
+  },
+  methods: {
+    showLeaderBoards: function showLeaderBoards() {
+      var self = this;
+      axios({
+        method: 'get',
+        url: '/showLeaderBoards'
+      }).then(function (response) {
+        self.leaderBoards = response.data;
+        console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
+  },
+  mounted: function mounted() {
+    this.showLeaderBoards();
+  }
+});
+Vue.component('my-progress-bar', {
+  template: "<div class=\"card-body\">\n            <h4 class=\"mr-1 mb-1\">Lvl:{{profileInfo[0]}}</h4>\n            <h5>Total Exp: {{Math.floor(profileInfo[2]*12.47)}}</h5>\n            <div class=\"progress\">\n            \t<div\n            \t\tclass=\"progress-bar\"\n            \t\trole=\"progressbar\"\n            \t\t:style=\"'width: ' + profileInfo[1]+'%;'\"\n            \t\t:aria-valuenow=\"profileInfo[1]\"\n            \t\taria-valuemin=\"0\"\n            \t\taria-valuemax=\"100\">\n            \t\t{{ profileInfo[1] }}%\n            \t</div>\n            </div>\n        </div>",
+  data: function data() {
+    return {
+      profileInfo: []
+    };
+  },
+  methods: {
+    showExp: function showExp() {
+      var self = this;
+      axios({
+        method: 'get',
+        url: '/showExp'
+      }).then(function (response) {
+        self.profileInfo = response.data; // console.log(response);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
+  },
+  created: function created() {
+    this.showExp();
+  }
+});
+Vue.component('quote', {
+  template: "\n    <p v-bind=\"quotes\">\n        <i>\"{{quotes.en}}\"</i><br>-{{quotes.author}}\n    </p>\n    ",
+  data: function data() {
+    return {
+      quotes: [],
+      displayedQuote: ''
+    };
+  },
+  methods: {
+    appendWords: function appendWords() {
+      var _this = this;
+
+      var it = this.quotes[Symbol.iterator](); // convenient for yeilding values
+
+      var _int = setInterval(function () {
+        // time interval
+        var next = it.next(); // next value
+
+        if (!next.done) {
+          // done = true when the end of array reached
+          _this.displayedQuote += ' ' + next.value; // concatenate word to the string
+        } else {
+          clearInterval(_int); // when done - clear interval
+        }
+      }, 1000); // interval duration, 1s
+
+    }
+  },
+  mounted: function mounted() {
+    var self = this;
+    axios.get('https://programming-quotes-api.herokuapp.com/quotes/random').then(function (response) {
+      self.quotes = response.data; // console.log(response.data[450].author+" "+response.data[450].en)
+    })["catch"](function (error) {
+      console.log(error);
+    });
+    this.appendWords();
+  }
+});
 Vue.component('log', {
-  template: "\n    <ul class=\"list-group\">\n        <li class=\"list-group-item\" v-for=\"(log, index) in logs\"\n        :log=\"log\"\n        :key=\"index\">\n        Time: {{log.duration}} mins, Type: {{log.type}}<br>\n        <small>{{log.created_at}}</small>\n        </li>\n    </ul>\n    ",
+  template: "\n    <div class=\"\">\n        <my-progress-bar></my-progress-bar><br>\n        <div class=\"card-header\">Activity Log: Your Last 5 Timers</div>\n        <div class=\"card-body\">\n            <ul class=\"list-group\">\n                <li class=\"list-group-item\" v-for=\"(log, index) in logs\"\n                :log=\"log\"\n                :key=\"index\">\n                Time: {{log.duration}} mins, Type: {{log.type}}<br>\n                    <small>{{log.created_at}}</small>\n                </li>\n            </ul>\n        </div>\n    </div>\n    ",
   data: function data() {
     return {
       logs: []
@@ -49177,26 +49264,28 @@ Vue.component('log', {
     showLog: function showLog() {
       var self = this;
       axios({
-        method: 'get',
+        method: 'post',
         url: '/'
       }).then(function (response) {
         self.logs = response.data;
-        console.log(response.data);
       })["catch"](function (error) {
         console.log(error);
       });
     }
+  },
+  mounted: function mounted() {
+    this.showLog();
   },
   created: function created() {
     this.showLog();
   }
 });
 Vue.component('timer', {
-  template: "\n    <div class=\"jumbotron\" id=\"app\">\n        <div class=\"container has-text-centered\">\n            <h2 class=\"title \">{{title}}</h2>\n            <div id=\"timer\">\n                <span id=\"minutes\">{{ minutes }}</span>\n                <span id=\"middle\">:</span>\n                <span id=\"seconds\">{{ seconds }}</span>\n            </div>\n\n            <div id=\"buttons\">\n            <!--     Start Timer Btn    -->\n                <button\n                id=\"start\"\n                class=\"button text-primary btn-lg\"\n                v-if=\"!timer\"\n                @click=\"startTimer\">\n                <i class=\"far fa-play-circle\"></i>\n                </button>\n\n            <!--     Pause Timer Btn    -->\n                <button\n                id=\"stop\"\n                class=\"button text-success btn-lg\"\n                v-if=\"timer\"\n                @click=\"stopTimer\">\n                <i class=\"far fa-pause-circle\"></i>\n                </button>\n\n            <!--     Restart Timer Btn   -->\n                <button\n                id=\"reset\"\n                class=\"button text-danger btn-lg\"\n                v-if=\"resetButton\"\n                @click=\"resetTimer\">\n                <i class=\"fas fa-undo\"></i>\n                </button>\n\n                <button\n                id=\"start\"\n                class=\"button text-success btn-lg\"\n                v-if=\"!timer\"\n                @click=\"addTimer\">\n                <i class=\"fas fa-plus\"></i>\n                </button>\n\n            <!--    Type of Timer selection    -->\n                <div class=\"input-group mt-3\">\n                    <div class=\"input-group-prepend\">\n                    <label class=\"input-group-text\" for=\"inputGroupSelect01\">Type</label>\n                    </div>\n                    <select class=\"custom-select\" id=\"inputGroupSelect01\" v-model=\"type\">\n                        <option value=\"unset\" selected>Unset</option>\n                        <option value=\"coding\">Coding</option>\n                        <option value=\"reading\">Recreational Reading</option>\n                        <option value=\"study\">Study</option>\n                    </select>\n                </div>\n            </div>\n        </div>\n    </div>\n    ",
+  template: "\n    <div class=\"jumbotron\" id=\"app\">\n        <div class=\"container has-text-centered\">\n            <h2 class=\"title \">{{title}}</h2>\n            <div id=\"timer\">\n                <span id=\"minutes\">{{ minutes }}</span>\n                <span id=\"middle\">:</span>\n                <span id=\"seconds\">{{ seconds }}</span>\n            </div>\n\n            <div id=\"buttons\">\n            <!--     Start Timer Btn    -->\n                <button\n                id=\"start\"\n                class=\"button text-primary btn-lg\"\n                v-if=\"!timer\"\n                @click=\"startTimer\">\n                <i class=\"far fa-play-circle\"></i>\n                </button>\n\n            <!--     Pause Timer Btn    -->\n                <button\n                id=\"stop\"\n                class=\"button text-success btn-lg\"\n                v-if=\"timer\"\n                @click=\"stopTimer\">\n                <i class=\"far fa-pause-circle\"></i>\n                </button>\n\n            <!--     Restart Timer Btn   -->\n                <button\n                id=\"reset\"\n                class=\"button text-danger btn-lg\"\n                v-if=\"resetButton\"\n                @click=\"resetTimer\">\n                <i class=\"fas fa-undo\"></i>\n                </button>\n\n                <button\n                id=\"start\"\n                class=\"button text-success btn-lg\"\n                v-if=\"!timer\"\n                @click=\"addTimer\">\n                <i class=\"fas fa-plus\"></i>\n                </button>\n\n            <!--    Type of Timer selection    -->\n                <div class=\"input-group mt-3\">\n                    <div class=\"input-group-prepend\">\n                    <label class=\"input-group-text\" for=\"inputGroupSelect01\">Type</label>\n                    </div>\n                    <select class=\"custom-select\" id=\"inputGroupSelect01\" v-model=\"type\">\n                        <option value=\"unset\" selected>Unset</option>\n                        <option value=\"coding\">Coding</option>\n                        <option value=\"reading\">Recreational Reading</option>\n                        <option value=\"studying\">Study</option>\n                    </select>\n                </div>\n            </div>\n        </div>\n    </div>\n    ",
   data: function data() {
     return {
       timer: null,
-      totalTime: .25 * 60,
+      totalTime: 25 * 60,
       resetButton: true,
       title: "Let the countdown begin!!",
       storeTime: null,
@@ -49205,11 +49294,11 @@ Vue.component('timer', {
   },
   methods: {
     startTimer: function startTimer() {
-      var _this = this;
+      var _this2 = this;
 
       this.timer = setInterval(function () {
-        return _this.countdown();
-      }, 1000);
+        return _this2.countdown();
+      }, 10);
       this.storeTime = Math.floor(this.totalTime / 60);
       this.resetButton = true;
       this.title = "Greatness is within sight!!";
@@ -49230,7 +49319,7 @@ Vue.component('timer', {
       this.title = "Let the countdown begin!!";
     },
     addTimer: function addTimer() {
-      this.totalTime = this.totalTime + .25 * 60;
+      this.totalTime = this.totalTime + 5 * 60;
       console.log('Add');
       this.timer = null;
       this.resetButton = true;
