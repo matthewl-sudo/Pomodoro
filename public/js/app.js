@@ -49167,7 +49167,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 Vue.component('leader-boards', {
-  template: "<div class=\"card-body\">\n            <ul class=\"list-group\">\n                <li class=\"list-group-item\"\n                v-for=\"(leaderBoard, index) in leaderBoards\"\n                :leaderBoard='leaderBoard'\n                :key='index'>\n                    <p>Place: {{index+1}} {{leaderBoard.name}}</p> <small>{{leaderBoard.duration}} Mins of being focused</small>\n                </li>\n            </ul>\n        </div>",
+  template: "<div class=\"card-body\">\n            <ul class=\"list-group\">\n                <li class=\"list-group-item\"\n                v-for=\"(leaderBoard, index) in leaderBoards\"\n                :leaderBoard='leaderBoard'\n                :key='index'>\n                    <p>Place: {{index+1}} {{leaderBoard.name}}</p> <small>{{leaderBoard.duration}} Total Mins of being focused</small>\n                </li>\n            </ul>\n        </div>",
   data: function data() {
     return {
       leaderBoards: []
@@ -49223,26 +49223,7 @@ Vue.component('quote', {
       displayedQuote: ''
     };
   },
-  methods: {
-    appendWords: function appendWords() {
-      var _this = this;
-
-      var it = this.quotes[Symbol.iterator](); // convenient for yeilding values
-
-      var _int = setInterval(function () {
-        // time interval
-        var next = it.next(); // next value
-
-        if (!next.done) {
-          // done = true when the end of array reached
-          _this.displayedQuote += ' ' + next.value; // concatenate word to the string
-        } else {
-          clearInterval(_int); // when done - clear interval
-        }
-      }, 1000); // interval duration, 1s
-
-    }
-  },
+  methods: {},
   mounted: function mounted() {
     var self = this;
     axios.get('https://programming-quotes-api.herokuapp.com/quotes/random').then(function (response) {
@@ -49250,7 +49231,6 @@ Vue.component('quote', {
     })["catch"](function (error) {
       console.log(error);
     });
-    this.appendWords();
   }
 });
 Vue.component('log', {
@@ -49294,10 +49274,10 @@ Vue.component('timer', {
   },
   methods: {
     startTimer: function startTimer() {
-      var _this2 = this;
+      var _this = this;
 
       this.timer = setInterval(function () {
-        return _this2.countdown();
+        return _this.countdown();
       }, 10);
       this.storeTime = Math.floor(this.totalTime / 60);
       this.resetButton = true;

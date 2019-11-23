@@ -19,7 +19,7 @@ Vue.component('leader-boards',{
                 v-for="(leaderBoard, index) in leaderBoards"
                 :leaderBoard='leaderBoard'
                 :key='index'>
-                    <p>Place: {{index+1}} {{leaderBoard.name}}</p> <small>{{leaderBoard.duration}} Mins of being focused</small>
+                    <p>Place: {{index+1}} {{leaderBoard.name}}</p> <small>{{leaderBoard.duration}} Total Mins of being focused</small>
                 </li>
             </ul>
         </div>`,
@@ -105,17 +105,7 @@ Vue.component('quote', {
         }
     },
     methods: {
-        appendWords: function() {
-            const it = this.quotes[Symbol.iterator](); // convenient for yeilding values
-            const int = setInterval(() => { // time interval
-                const next = it.next(); // next value
-                if (!next.done) { // done = true when the end of array reached
-                    this.displayedQuote += ' ' + next.value; // concatenate word to the string
-                } else {
-                    clearInterval(int); // when done - clear interval
-                }
-            }, 1000) // interval duration, 1s
-        }
+
     },
     mounted() {
         var self = this;
@@ -127,7 +117,6 @@ Vue.component('quote', {
         .catch(error =>{
             console.log(error)
         });
-        this.appendWords();
 
     },
 });
