@@ -49219,8 +49219,7 @@ Vue.component('quote', {
   template: "\n    <p v-bind=\"quotes\">\n        <i>\"{{quotes.en}}\"</i><br>-{{quotes.author}}\n    </p>\n    ",
   data: function data() {
     return {
-      quotes: [],
-      displayedQuote: ''
+      quotes: []
     };
   },
   methods: {},

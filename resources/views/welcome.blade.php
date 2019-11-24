@@ -95,7 +95,7 @@
                     <h3>Competetive atmospere with your peers.<br> Displaying Levels & LeaderBoards</h3>
                     <h3>Generating Inspirational Quotes to keep you inspired.</h3>
                     <h3>Work/Reward Design Aspect (Coming Soon)</h3>
-                    <h3>Possibly Spotify Integration (Also Coming Soon)</h3>
+                    <h3>Possibly Spotify Integration (Also Coming Soon...Maybe)</h3>
                 </div>
             </div>
         </header>
